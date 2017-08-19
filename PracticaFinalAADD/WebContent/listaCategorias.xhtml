@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="#{menuBean.plantilla}">
+	<ui:define name="title">
+		<f:view locale="#{idiomaBean.locale}">
+			<f:loadBundle basename="resources.application" var="msg" />
+		</f:view>
+	    <h:outputText value="#{msg.categoriasRegistradas}" />
+	</ui:define>
+	<ui:define name="header">
+	</ui:define>
+	<ui:define name="content">
+
+		<f:metadata>
+			<f:event type="preRenderView" listener="#{listarCatalogosBean.clear}" />
+			<f:event type="preRenderView"
+				listener="#{registrarCatalogosBean.clear}" />
+			<f:event type="preRenderView"
+				listener="#{seleccionarCatalogosBean.clear}" />
+			<f:event type="preRenderView" listener="#{listarItemsBean.clear}" />
+			<f:event type="preRenderView"
+				listener="#{registrarCategoriaBean.clear}" />
+			<f:event type="preRenderView"
+				listener="#{listarCategoriasBean.clear}" />
+
+		</f:metadata>
+
+		<h:form id="formTabla">
+			<p:growl id="msgs" showDetail="true" />
+			<p:dataTable id="tablaCategorias"
+				value="#{listarCategoriasBean.categorias}" var="categoria">
+
+				<f:facet name="header">
+					<h:outputText value="#{msg.listaDeCategorias}" />
+		        </f:facet>
+				<!-- Cada columna tiene una cabecera (header) con facet y despues el valor
+						recogido con el iterador -->
+				<p:column headerText="#{msg.codigo}">
+					<h:outputText value="#{categoria.codigo}" />
+				</p:column>
+				<p:column headerText="#{msg.nombre}">
+					<h:outputText value="#{categoria.nombre}" />
+				</p:column>
+				<p:column>
+					<p:commandButton value="#{msg.borrar}" icon="ui-icon-close"
+						actionListener="#{listarCategoriasBean.borrar}">
+						<f:param id="categoria" value="#{categoria}" />
+						<f:ajax execute="@all" render="tablaCategorias" />
+						<p:confirm header="#{msg.confirmacion}" icon="ui-icon-alert"
+							message="¿Quieres borrar la categoria #{categoria.nombre}" />
+					</p:commandButton>
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+						<p:commandButton value="#{msg.si}" type="button"
+							styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						<p:commandButton value="#{msg.no}" type="button"
+							styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>
+				</p:column>
+
+				<f:facet name="footer">
+					<p:panelGrid>
+						<p:commandButton style="float:left" type="button" value="#{msg.crearCategoria}"
+							icon="ui-icon-plus" onclick="PF('registroCategoria').show();">
+						</p:commandButton>
+					</p:panelGrid>
+				</f:facet>
+			</p:dataTable>
+		</h:form>
+		<h:form id="formRegistroCategoria">
+			<p:growl id="growl2" sticky="true" showDetail="true" life="3000" />
+			<p:dialog header="#{msg.registroDeCategoria}" ajax="false"
+				widgetVar="registroCategoria" modal="true" showEffect="fade"
+				hideEffect="fade">
+				<p:ajax event="close" update="formTabla" />
+				<h:panelGrid columns="2" cellpadding="5">
+					<h:outputLabel for="nombre" value="#{msg.nombre}:" />
+					<p:inputText id="nombre"
+						value="#{registrarCategoriaBean.nombreCategoria}" required="true"
+						label="nombre" />
+					<f:facet name="footer">
+						<p:commandButton value="#{msg.registrar}" update="growl2"
+							oncomplete="if (args &amp;&amp; !args.validationFailed) PF('registroCategoria').hide();"
+							actionListener="#{registrarCategoriaBean.registrar}">
+						</p:commandButton>
+					</f:facet>
+				</h:panelGrid>
+			</p:dialog>
+		</h:form>
+
+	</ui:define>
+	<ui:define name="footer">
+	</ui:define>
+</ui:composition>
+</html>

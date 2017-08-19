@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1"
+	xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+	<!-- Con transaction-type="RESOURCE_LOCAL" indico que voy a usar Non-Managed -->
+	<persistence-unit name="PracticaFinalAADD" transaction-type="RESOURCE_LOCAL">
+	<!-- Con transaction-type="JTA" indico que voy a usar Container-Managed -->
+	<!-- <persistence-unit name="PracticaFinalAADD" transaction-type="JTA"> -->
+		<!-- Indico la ruta del recurso (Resource de server.xml) que tiene la info de la BD (user, password..) -->
+		<!-- <jta-data-source>java:comp/env/jdbc/AADD_JPA</jta-data-source> -->
+		<class>modelo.Usuario</class>
+		<class>modelo.Catalogo</class>
+		<class>modelo.Categoria</class>
+		<class>modelo.Item</class>
+		
+		<properties>
+			<!-- Con JTA estos 4 primeros valores no se ponen aqui porque ya estan definidos en server.xml -->
+			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
+			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/aadd_jpa" />
+			<property name="javax.persistence.jdbc.user" value="root" />
+			<property name="javax.persistence.jdbc.password" value="admin" />
+			<!-- Le decimos como se genera la BD: cuando se lance la aplicacion se 
+				crean las tablas. -->
+			<property name="eclipselink.ddl-generation" value="create-tables" />
+			<!-- Que lo ejecute directamente en la BD y no en un fichero externo. -->
+			<property name="eclipselink.ddl-generation.output-mode"
+				value="database" />
+		</properties>
+
+
+	</persistence-unit>
+</persistence>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<title>Práctica AADD</title>
+</h:head>
+<h:body>
+
+	<h:outputText value="#{msg['titulo']}" />
+	<h:form id="formPrincipal">
+		<p:growl id="growl" showDetail="true" />
+
+		<p:commandButton value="Registrar" icon="ui-icon-file"
+			onclick="PF('registrarUsuarioDialogo').show();">
+		</p:commandButton>
+		<br />
+		<p:commandButton style="margin-top:1%" value="Login"
+			icon="ui-icon-file" type="button"
+			onclick="PF('loginUsuarioDialogo').show();">
+		</p:commandButton>
+	</h:form>
+	<h:form id="formRegistroUsuario">
+		<p:growl id="growl1" showDetail="true" />
+		<p:messages id="msgs" />
+		<p:dialog header="Registro de usuario"
+			widgetVar="registrarUsuarioDialogo" modal="true" showEffect="fade"
+			hideEffect="fade">
+
+
+			<h:panelGrid id="registroGrid" columns="3" cellpadding="5">
+				<h:outputLabel for="nombre" value="Nombre:" />
+				<p:inputText id="nombre" value="#{registrarUsuarioBean.nombre}"
+					required="true" label="Nombre" />
+				<p:message for="nombre" />
+
+				<h:outputLabel for="email" value="Email:" />
+				<p:inputText id="email"
+					validator="#{emailValidatorBean.validarEmail}"
+					value="#{registrarUsuarioBean.email}" required="true" label="Email" />
+				<p:message for="email" />
+
+				<h:outputLabel for="nif" value="DNI:" />
+				<p:inputMask style="text-transform: uppercase" id="nif"
+					value="#{registrarUsuarioBean.nif}" required="true" label="NIF"
+					mask="99999999-a" />
+				<p:message for="nif" />
+
+				<h:outputLabel for="usuario" value="Usuario:" />
+				<p:inputText id="usuario" value="#{registrarUsuarioBean.usuario}"
+					validator="#{registrarUsuarioBean.validarUsuarioRegistro}"
+					required="true" label="Usuario" />
+				<p:message for="usuario" />
+
+				<h:outputLabel for="contraseña" value="Contraseña:" />
+				<p:password id="contraseña" value="#{registrarUsuarioBean.clave}"
+					match="contraseña2" required="true" label="Contraseña" />
+				<p:message for="contraseña" />
+				<h:outputLabel for="contraseña2" value="Repita su contraseña" />
+				<p:password id="contraseña2" value="#{registrarUsuarioBean.clave}"
+					required="true" label="Contraseña" />
+				<p:message for="contraseña2" />
+			</h:panelGrid>
+
+			<p:commandButton value="Registrar" validateClient="true"
+				update="registroGrid, formRegistroUsuario:growl1"
+				oncomplete="if (args &amp;&amp; !args.validationFailed) PF('registrarUsuarioDialogo').hide()"
+				actionListener="#{registrarUsuarioBean.registrar}">
+			</p:commandButton>
+
+		</p:dialog>
+	</h:form>
+
+	<h:form id="formLogin">
+		<p:messages id="msgs3" />
+		<p:dialog id="dialogoLogin" header="Login de usuario" widgetVar="loginUsuarioDialogo"
+			modal="true" showEffect="fade" hideEffect="fade">
+			<h:panelGrid id="loginGrid" columns="3" cellpadding="5">
+				<h:outputLabel for="usuario2" value="Usuario:" />
+				<p:inputText id="usuario2" value="#{registrarUsuarioBean.usuario}"
+					validator="#{registrarUsuarioBean.validarUsuarioLogin}"
+					required="true" label="Nombre" />
+				<p:message for="usuario2" />
+
+				<h:outputLabel for="contraseña3" value="Contraseña:" />
+				<p:password id="contraseña3" value="#{registrarUsuarioBean.clave}"
+					required="true" label="Contraseña" />
+					<f:param id="usuario" value="usuario2" />
+				<p:message for="contraseña3" />
+
+
+			</h:panelGrid>
+			<p:commandButton value="Login" update="loginGrid, formPrincipal:growl"
+				validateClient="true"
+				oncomplete="if (args &amp;&amp; !args.validationFailed) PF('loginUsuarioDialogo').hide();"
+				actionListener="#{registrarUsuarioBean.login}">
+			</p:commandButton>
+		</p:dialog>
+	</h:form>
+</h:body>
+</html>

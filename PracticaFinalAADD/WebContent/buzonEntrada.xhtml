@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="#{menuBean.plantilla}">
+
+	<ui:define name="title">
+		<f:view locale="#{idiomaBean.locale}">
+			<f:loadBundle basename="resources.application" var="msg" />
+		</f:view>
+		<h:outputText value="#{msg.tituloHome}" />
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="ReceptionForm">
+			<p:growl id="growl1" showDetail="true" />
+			<p:messages id="msgs" />
+			<h:outputLabel value="Buzon de entrada"
+				style="font-size:20px;font-weight:bold" for="texto" />
+			<br />
+			<p:outputLabel value="Tiempo de espera:" for="tiempoEspera" />
+			<p:inputText id="tiempoEspera" value="#{mensajesBean.tiempoEspera}" />
+			<br />
+			<br />
+
+			<p:commandButton id="submit"
+				update="formTablaMensajes, ReceptionForm:growl1" ajax="false"
+				actionListener="#{mensajesBean.recibirTexto}" value="Recibir">
+			</p:commandButton>
+			<br />
+
+		</h:form>
+		<h:form id="formTablaMensajes">
+				<p:growl id="growl2" showDetail="true" />
+				<p:dataTable id="tablaMensajes" style="margin-top:4%;width:50%"
+					value="#{mensajesBean.mensajesRecibidos}" var="mensaje" scrollable="true"
+					scrollHeight="300">
+					<p:column headerText="Pregunta">
+						<h:outputText value="#{mensaje}" />
+					</p:column>
+					<p:column headerText="Respuesta">
+						<p:inputTextarea required="true" id="texto" value="#{mensajesBean.respuesta}">
+							<f:validateLength maximum="255" />
+						</p:inputTextarea>
+					</p:column>
+					<p:column>
+						<p:commandButton style="float:left" update="formTablaMensajes:growl2"
+							value="Responder" icon="ui-icon-mail-open" ajax="false"
+							actionListener="#{mensajesBean.responder}">
+							<f:param id="pregunta" value="#{mensaje}" />
+						</p:commandButton>
+					</p:column>
+				</p:dataTable>
+			</h:form>
+	</ui:define>
+
+</ui:composition>
+</html>

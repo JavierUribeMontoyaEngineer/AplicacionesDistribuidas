@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="#{menuBean.plantilla}">
+	<ui:define name="title">
+		<f:view locale="#{idiomaBean.locale}">
+			<f:loadBundle basename="resources.application" var="msg" />
+		</f:view>
+		<h:outputFormat value="#{msg.misCatalogos}" />
+	</ui:define>
+	<ui:define name="header">
+	</ui:define>
+	<ui:define name="content">
+
+		<f:metadata>
+			<f:event type="preRenderView" listener="#{listarCatalogosBean.clear}" />
+			<f:event type="preRenderView"
+				listener="#{registrarCatalogosBean.clear}" />
+			<f:event type="preRenderView"
+				listener="#{seleccionarCatalogosBean.clear}" />
+			<f:event type="preRenderView" listener="#{listarItemsBean.clear}" />
+			<f:event type="preRenderView"
+				listener="#{registrarCategoriaBean.clear}" />
+			<f:event type="preRenderView"
+				listener="#{listarCategoriasBean.clear}" />
+
+		</f:metadata>
+
+		<br />
+		<h:form id="formBotonBusqueda">
+			<p:commandButton rendered="#{!seleccionarCatalogosBean.visible}"
+				style="margin-right:86%" value="#{msg.buscar}" ajax="false"
+				icon="ui-icon-plus"
+				actionListener="#{seleccionarCatalogosBean.conmutar}">
+			</p:commandButton>
+			<p:commandButton rendered="#{seleccionarCatalogosBean.visible}"
+				style="margin-right:86%" value="#{msg.buscar}" ajax="false"
+				icon="ui-icon-minus"
+				actionListener="#{seleccionarCatalogosBean.conmutar}">
+			</p:commandButton>
+		</h:form>
+
+		<h:form id="formBusqueda">
+			<p:growl id="msgs" showDetail="true" />
+			<h:panelGrid style="border:none" id="panelBusqueda" columns="6"
+				rendered="#{seleccionarCatalogosBean.visible}" autoUpdate="true">
+				<p:selectOneMenu style="margin-right:1%"
+					value="#{seleccionarCatalogosBean.criterio}" required="true"
+					label="Buscar por un criterio" filter="true"
+					filterMatchMode="contains">
+					<f:selectItem itemLabel="#{msg.buscarPor}" itemValue=""
+						noSelectionOption="true" />
+					<f:selectItem itemLabel="Codigo" itemValue="0" />
+					<f:selectItem itemLabel="Url producto" itemValue="1" />
+					<f:selectItem itemLabel="Nombre" itemValue="2" />
+					<f:selectItem itemLabel="Url imagen" itemValue="3" />
+					<f:selectItem itemLabel="Nombre completo" itemValue="4" />
+					<f:selectItem itemLabel="Marca" itemValue="5" />
+					<f:selectItem itemLabel="Precio rebajado" itemValue="6" />
+					<f:selectItem itemLabel="Precio original" itemValue="7" />
+				</p:selectOneMenu>
+				<p:selectOneMenu style="margin-right:1%"
+					value="#{seleccionarCatalogosBean.ordenarPor}" required="true"
+					label="Ordenar por un criterio" filter="true"
+					filterMatchMode="contains">
+					<f:selectItem itemLabel="#{msg.ordenarPor}" itemValue=""
+						noSelectionOption="true" />
+					<f:selectItem itemLabel="Codigo" itemValue="0" />
+					<f:selectItem itemLabel="Url producto" itemValue="1" />
+					<f:selectItem itemLabel="Nombre" itemValue="2" />
+					<f:selectItem itemLabel="Url imagen" itemValue="3" />
+					<f:selectItem itemLabel="Nombre completo" itemValue="4" />
+					<f:selectItem itemLabel="Marca" itemValue="5" />
+					<f:selectItem itemLabel="Precio rebajado" itemValue="6" />
+					<f:selectItem itemLabel="Precio original" itemValue="7" />
+				</p:selectOneMenu>
+				<p:selectOneMenu style="margin-right:1%"
+					value="#{seleccionarCatalogosBean.ascendente}" required="true"
+					label="Orden asc/desc" filter="true" filterMatchMode="contains">
+					<f:selectItem itemLabel="#{msg.ordenCriterio}" itemValue=""
+						noSelectionOption="true" />
+					<f:selectItem itemLabel="Ascendente" itemValue="0" />
+					<f:selectItem itemLabel="Descendente" itemValue="1" />
+				</p:selectOneMenu>
+
+				<h:panelGrid style="float:left" id="catalogos" columns="1"
+					cellpadding="1">
+					<p:selectCheckboxMenu id="menu" required="true"
+						converter="#{catalogoConverterBean}"
+						value="#{seleccionarCatalogosBean.catalogosSeleccionados}"
+						label="#{msg.seleccionCatalogos}" filter="true"
+						filterMatchMode="contains" panelStyle="width:250px">
+						<f:selectItems value="#{listarCatalogosBean.catalogos}"
+							var="catalogo" itemLabel="#{catalogo.nombre}"
+							itemValue="#{catalogo.nombre}" />
+					</p:selectCheckboxMenu>
+				</h:panelGrid>
+
+				<p:inputText value="#{seleccionarCatalogosBean.keyword}" />
+				<p:commandButton value="#{msg.buscar}" ajax="false"
+					actionListener="#{seleccionarCatalogosBean.filtrar}">
+				</p:commandButton>
+			</h:panelGrid>
+		</h:form>
+
+		<h:form id="formTabla">
+			<p:growl id="msgs" showDetail="true" />
+			<p:dataTable id="tablaCatalogos"
+				value="#{listarCatalogosBean.catalogos}" var="catalogo"
+				selectionMode="single"
+				selection="#{listarCatalogosBean.catalogoSeleccionado}"
+				rowKey="#{catalogo.nombre}">
+
+				<f:facet name="header">
+		            <h:outputFormat value="#{msg.listaCatalogosUsuario}" >
+		            	<f:param value="#{usuarioBean.usuarioActual.usuario}"></f:param>
+		            </h:outputFormat>
+		        </f:facet>
+				<p:ajax event="rowSelect"
+					listener="#{listarCatalogosBean.seleccionarCatalogo}"
+					update=":formTabla:msgs" />
+				<p:ajax event="rowUnselect"
+					listener="#{listarCatalogosBean.deseleccionarCatalogo}"
+					update=":formTabla:msgs" />
+				<!-- Cada columna tiene una cabecera (header) con facet y despues el valor
+						recogido con el iterador -->
+				<p:column headerText="#{msg.nombre}">
+					<h:outputText value="#{catalogo.nombre}" />
+				</p:column>
+				<p:column headerText="#{msg.fecha}">
+					<h:outputText value="#{catalogo.fecha}" />
+				</p:column>
+				<p:column headerText="#{msg.url}">
+					<h:outputText value="#{catalogo.url}" />
+				</p:column>
+				<p:column headerText="#{msg.web}">
+					<h:outputText value="#{catalogo.web}" />
+				</p:column>
+
+				<p:column>
+					<p:commandButton value="#{msg.borrar}" icon="ui-icon-close"
+						actionListener="#{listarCatalogosBean.borrar}">
+						<f:param id="catalogo" value="#{catalogo}" />
+						<f:ajax execute="@all" render="tablaCatalogos" />
+
+						<p:confirm header="#{msg.confirmacion}" icon="ui-icon-alert"
+							message="¿Quieres borrar el catálogo #{catalogo.nombre}"/>
+					</p:commandButton>
+
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+						<p:commandButton value="#{msg.si}" type="button"
+							styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						<p:commandButton value="#{msg.no}" type="button"
+							styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>
+				</p:column>
+
+				<f:facet name="footer">
+					<p:commandButton style="float:left" type="button"
+						value="#{msg.añadirCatalogo}" icon="ui-icon-plus"
+						onclick="PF('registroCatalogo').show();">
+					</p:commandButton>
+					<p:commandButton style="margin-right: 71%" type="button"
+						value="#{msg.crearCategoria}" icon="ui-icon-plus"
+						onclick="PF('registroCategoria').show();">
+					</p:commandButton>
+				</f:facet>
+			</p:dataTable>
+		</h:form>
+
+		<h:form id="formRegistroCatalogo">
+			<p:growl id="growl" sticky="true" showDetail="true" life="3000" />
+			<p:dialog header="#{msg.registroDeCatalogo}" widgetVar="registroCatalogo"
+				modal="true" showEffect="fade" hideEffect="fade">
+				<p:ajax event="close" update="formTabla" />
+				<h:panelGrid columns="2" cellpadding="5">
+					<h:outputLabel for="nombre" value="#{msg.nombre}:" />
+					<p:inputText id="nombre" value="#{registrarCatalogosBean.nombre}"
+						required="true" label="nombre" />
+
+					<h:outputLabel for="web" value="#{msg.web}:" />
+					<p:inputText id="web" value="#{registrarCatalogosBean.web}"
+						required="true" label="web" />
+
+					<h:outputLabel for="url" value="#{msg.url}:" />
+					<p:inputText id="url" value="#{registrarCatalogosBean.url}"
+						required="true" label="url" />
+
+					<h:outputLabel for="categorias" value="#{msg.categorias}:" />
+
+					<h:panelGrid style="float:left" id="categorias" columns="1"
+						cellpadding="1">
+						<p:selectCheckboxMenu id="menu"
+							converter="#{categoriaConverterBean}"
+							value="#{registrarCatalogosBean.categoriasSeleccionadas}"
+							label="#{msg.seleccioneCategorias}" filter="true"
+							filterMatchMode="contains" panelStyle="width:250px">
+							<f:selectItems value="#{listarCategoriasBean.categorias}"
+								var="categoria" itemLabel="#{categoria.nombre}"
+								itemValue="#{categoria.nombre}" />
+						</p:selectCheckboxMenu>
+					</h:panelGrid>
+
+					<f:facet name="footer">
+						<p:commandButton value="#{msg.registrar}" update="growl"
+							oncomplete="if (args &amp;&amp; !args.validationFailed) PF('registroCatalogo').hide();"
+							actionListener="#{registrarCatalogosBean.registrar}">
+
+							<f:param id="usuario_actual" value="#{usuarioBean.usuarioActual}" />
+						</p:commandButton>
+					</f:facet>
+				</h:panelGrid>
+			</p:dialog>
+		</h:form>
+
+		<h:form id="formRegistroCategoria">
+			<p:growl id="growl2" sticky="true" showDetail="true" life="3000" />
+			<p:dialog header="#{msg.registroDeCategoria}" ajax="false"
+				widgetVar="registroCategoria" modal="true" showEffect="fade"
+				hideEffect="fade">
+				<p:ajax event="close" update="formRegistroCatalogo" />
+				<h:panelGrid columns="2" cellpadding="5">
+					<h:outputLabel for="nombre" value="#{msg.nombre}:" />
+					<p:inputText id="nombre"
+						value="#{registrarCategoriaBean.nombreCategoria}" required="true"
+						label="nombre" />
+					<f:facet name="footer">
+						<p:commandButton value="#{msg.registrar}" update="growl2"
+							oncomplete="if (args &amp;&amp; !args.validationFailed) PF('registroCategoria').hide();"
+							actionListener="#{registrarCategoriaBean.registrar}">
+						</p:commandButton>
+					</f:facet>
+				</h:panelGrid>
+			</p:dialog>
+		</h:form>
+
+	</ui:define>
+	<ui:define name="footer">
+	</ui:define>
+</ui:composition>
+</html>

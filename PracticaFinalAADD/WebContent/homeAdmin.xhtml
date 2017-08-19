@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="#{menuBean.plantilla}">
+
+	<ui:define name="title">
+		<f:view locale="#{idiomaBean.locale}">
+			<f:loadBundle basename="resources.application" var="msg" />
+		</f:view>
+		<h:outputText value="#{msg.tituloHome}" />
+	</ui:define>
+
+	<ui:define name="content">
+		<f:metadata>
+			<f:event type="preRenderView" listener="#{mensajesBean.leerFichero}" />
+			<f:event type="preRenderView"
+				listener="#{mensajesSuscripcionBean.recibirTodosTexto}" />
+		</f:metadata>
+		<h:outputFormat style="font-size:50px" value="#{msg.bienvenido}">
+			<f:param value="#{usuarioBean.usuarioActual.usuario}"></f:param>
+		</h:outputFormat>
+		<h:form>
+			<p:growl id="msgs" showDetail="true" />
+
+			<p:dataTable id="tablaUsuarios"
+				value="#{listarUsuariosBean.usuarios}" var="usuario">
+
+				<f:facet name="header">
+					<h:outputFormat value="#{msg.usuariosRegistradosSistema}" />
+				</f:facet>
+				<p:column headerText="#{msg.usuario}">
+					<h:outputText value="#{usuario.usuario}" />
+				</p:column>
+				<p:column headerText="#{msg.nombre}">
+					<h:outputText value="#{usuario.nombre}" />
+				</p:column>
+				<p:column headerText="#{msg.email}">
+					<h:outputText value="#{usuario.email}" />
+				</p:column>
+				<p:column headerText="#{msg.nif}">
+					<h:outputText value="#{usuario.nif}" />
+				</p:column>
+
+				<p:column>
+					<p:commandButton value="#{msg.borrar}" icon="ui-icon-close"
+						actionListener="#{listarUsuariosBean.borrarUsuario}">
+						<f:param id="usuario" value="#{usuario}" />
+						<f:ajax execute="@all" render="tablaUsuarios" />
+						<p:confirm header="#{msg.confirmacion}" icon="ui-icon-alert"
+							message="¿Quieres borrar el usuario #{usuario.usuario}" />
+					</p:commandButton>
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+						<p:commandButton value="#{msg.si}" type="button"
+							styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						<p:commandButton value="#{msg.no}" type="button"
+							styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>
+				</p:column>
+			</p:dataTable>
+		</h:form>
+		<h:form id="formTablaMensajes">
+			<p:dataTable id="tablaMensajes" style="margin-top:4%;width:50%"
+				value="#{mensajesBean.mensajes}" var="mensaje" scrollable="true"
+				scrollHeight="300">
+				<p:column headerText="Pregunta">
+					<h:outputText value="#{mensaje.pregunta}" />
+				</p:column>
+				<p:column headerText="Respuesta">
+					<h:outputText value="#{mensaje.respuesta}" />
+				</p:column>
+			</p:dataTable>
+		</h:form>
+		<h:form id="formTablaMensajes2">
+			<p:dataTable id="tablaMensajes2" style="margin-top:4%;width:50%"
+				value="#{mensajesSuscripcionBean.mensajesCatalogo}" var="mensaje"
+				scrollable="true" scrollHeight="300">
+				<p:column headerText="Notificacion">
+					<h:outputText value="#{mensaje}" />
+				</p:column>
+			</p:dataTable>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

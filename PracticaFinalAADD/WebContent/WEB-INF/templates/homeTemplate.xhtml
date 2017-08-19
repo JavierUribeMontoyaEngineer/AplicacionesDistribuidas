@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<!-- TODO IMPORTANTE: poner h:head en lugar de head para que funcione PrimeFaces -->
+<h:head>
+
+	<!-- Si no rellenamos el hueco por defecto pondra "Default title" -->
+	<title><ui:insert name="title">Default title</ui:insert></title>
+	<f:view locale="#{idiomaBean.locale}">
+		<f:loadBundle basename="resources.application" var="msg" />
+	</f:view>
+</h:head>
+
+<h:body>
+	<ui:debug hotkey="x"
+		rendered="#{initParam['javax.faces.FACELETS_DEVELOPMENT']}" />
+
+	<div id="header">
+
+		<h:form>
+			<p:growl id="messages" />
+
+			<p:menubar>
+				<p:menuitem value="#{msg.inicio}" icon="ui-icon-home"
+					outcome="home.xhtml" />
+
+				<p:menuitem value="#{msg.miPerfil}" icon="ui-icon-person"
+					outcome="perfil.xhtml" />
+
+				<p:menuitem value="#{msg.misCatalogos}" icon="ui-icon-folder-open"
+					outcome="listaCatalogos.xhtml" />
+
+				<p:submenu label="#{msg.mensajes}" icon="fa fa-language">
+					<p:menuitem value="Buzon de entrada" ajax="false"
+						outcome="buzonEntrada.xhtml" />
+					<p:menuitem value="Redactar un mensaje" ajax="false"
+						outcome="redactarMensaje.xhtml" />
+				</p:submenu>	
+
+				<p:submenu label="#{msg.idioma}" icon="fa fa-language">
+					<p:menuitem value="English" ajax="false"
+						action="#{idiomaBean.setLanguage('en','')}" />
+					<p:menuitem value="Español" ajax="false"
+						action="#{idiomaBean.setLanguage('es','')}" />
+					<p:menuitem value="Catalán" ajax="false"
+						action="#{idiomaBean.setLanguage('ca','es')}" />
+				</p:submenu>
+
+
+				<f:facet name="options">
+					<p:commandButton id="seleccionar" value="#{msg.cerrarSesion}"
+						ajax="false" actionListener="#{menuBean.cerrarSesion}">
+					</p:commandButton>
+				</f:facet>
+			</p:menubar>
+		</h:form>
+	</div>
+
+
+	<div id="content">
+		<ui:insert name="content">
+    	Contenido
+    	<!--  include your content file or uncomment the include below and create content.xhtml in this directory -->
+			<!-- <div> -->
+			<!-- <ui:include src="content.xhtml"/> -->
+			<!-- </div> -->
+		</ui:insert>
+	</div>
+
+	<div id="footer" style="margin-top: 35%;">
+		<p:column>Copyright 2016 by Jorge Monllor and Javier Uribe Association</p:column>
+	</div>
+
+</h:body>
+
+</html>

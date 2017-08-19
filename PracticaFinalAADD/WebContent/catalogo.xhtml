@@ -1,0 +1,335 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="#{menuBean.plantilla}">
+	<ui:define name="title">
+		<f:view locale="#{idiomaBean.locale}">
+			<f:loadBundle basename="resources.application" var="msg" />
+		</f:view>
+		<h:outputText value="#{msg.catalogo}" />
+	</ui:define>
+
+	<ui:define name="content">
+
+		<h:form id="formInfo">
+			<p:growl id="msgs" showDetail="true" />
+			<p:dataTable id="infoCatalogo"
+				value="#{listarCatalogosBean.catalogoSeleccionado}" var="catalogo">
+				<f:facet name="header">
+					<h:outputFormat value="#{msg.catalogoNombre}">
+						<f:param
+							value="#{listarCatalogosBean.catalogoSeleccionado.nombre}"></f:param>
+					</h:outputFormat>
+				</f:facet>
+
+				<p:column headerText="#{msg.nombre}">
+					<h:outputText value="#{catalogo.nombre}" />
+				</p:column>
+				<p:column headerText="#{msg.fecha}">
+					<h:outputText value="#{catalogo.fecha}" />
+				</p:column>
+				<p:column headerText="#{msg.url}">
+					<h:outputText value="#{catalogo.url}" />
+				</p:column>
+				<p:column headerText="#{msg.web}">
+					<h:outputText value="#{catalogo.web}" />
+				</p:column>
+				<p:column headerText="#{msg.usuario}">
+					<h:outputText value="#{catalogo.usuario.usuario}" />
+				</p:column>
+			</p:dataTable>
+			<br />
+			<br />
+		</h:form>
+
+		<h:form id="formBusqueda">
+			<h:panelGrid style="border:none" id="panelBusqueda" columns="6"
+				autoUpdate="true">
+				<p:selectOneMenu style="margin-right:1%"
+					value="#{listarItemsBean.criterio}" required="true"
+					label="Buscar por un criterio" filter="true"
+					filterMatchMode="contains">
+					<f:selectItem itemLabel="#{msg.buscarPor}" itemValue=""
+						noSelectionOption="true" />
+					<f:selectItem itemLabel="Codigo" itemValue="0" />
+					<f:selectItem itemLabel="Url producto" itemValue="1" />
+					<f:selectItem itemLabel="Nombre" itemValue="2" />
+					<f:selectItem itemLabel="Url imagen" itemValue="3" />
+					<f:selectItem itemLabel="Nombre completo" itemValue="4" />
+					<f:selectItem itemLabel="Marca" itemValue="5" />
+					<f:selectItem itemLabel="Precio rebajado" itemValue="6" />
+					<f:selectItem itemLabel="Precio original" itemValue="7" />
+				</p:selectOneMenu>
+				<p:selectOneMenu style="margin-right:1%"
+					value="#{listarItemsBean.ordenarPor}" required="true"
+					label="Ordenar por un criterio" filter="true"
+					filterMatchMode="contains">
+					<f:selectItem itemLabel="#{msg.ordenarPor}" itemValue=""
+						noSelectionOption="true" />
+					<f:selectItem itemLabel="Codigo" itemValue="0" />
+					<f:selectItem itemLabel="Url producto" itemValue="1" />
+					<f:selectItem itemLabel="Nombre" itemValue="2" />
+					<f:selectItem itemLabel="Url imagen" itemValue="3" />
+					<f:selectItem itemLabel="Nombre completo" itemValue="4" />
+					<f:selectItem itemLabel="Marca" itemValue="5" />
+					<f:selectItem itemLabel="Precio rebajado" itemValue="6" />
+					<f:selectItem itemLabel="Precio original" itemValue="7" />
+				</p:selectOneMenu>
+				<p:selectOneMenu style="margin-right:1%"
+					value="#{listarItemsBean.ascendente}" required="true"
+					label="Orden asc/desc" filter="true" filterMatchMode="contains">
+					<f:selectItem itemLabel="#{msg.ordenCriterio}" itemValue=""
+						noSelectionOption="true" />
+					<f:selectItem itemLabel="Ascendente" itemValue="0" />
+					<f:selectItem itemLabel="Descendente" itemValue="1" />
+				</p:selectOneMenu>
+				<p:inputText value="#{listarItemsBean.keyword}" />
+				<p:commandButton value="#{msg.buscar}" ajax="false"
+					actionListener="#{listarItemsBean.filtrar}">
+				</p:commandButton>
+
+				<p:commandButton style="clear:both;border-spacing:10%" type="button"
+					value="#{msg.cargarItemsEnElCatalogo}" icon="ui-icon-plus"
+					onclick="PF('cargarItems').show();">
+				</p:commandButton>
+				<p:growl id="growl2" sticky="true" showDetail="true" life="3000" />
+				<p:dialog header="#{msg.elijaFichero}" widgetVar="cargarItems"
+					modal="true">
+					<p:ajax event="close" update="formTablaItems" />
+					<h:form enctype="multipart/form-data">
+						<p:growl id="messages" showDetail="true" />
+						<h:head>
+							<p:fileUpload fileUploadListener="#{cargarItemsBean.cargar}"
+								mode="advanced" multipart="false" skinSimple="true"
+								update="messages" label="#{msg.explorar}"
+								uploadLabel="#{msg.cargarItems}" cancelLabel="#{msg.cancelar}"
+								allowTypes="/(\.|\/)(csv)$/" dragDropSupport="true"
+								oncomplete="PF('cargarItems').hide();" />
+							<br />
+						</h:head>
+					</h:form>
+				</p:dialog>
+			</h:panelGrid>
+
+		</h:form>
+
+		<h:form id="formTablaItems">
+			<p:dataTable id="tablaItems" value="#{listarItemsBean.items}"
+				var="item" scrollable="true" scrollHeight="200">
+				<f:facet name="header">
+					<h:outputFormat value="#{msg.itemsDelCatalogo}">
+						<f:param value="#{listarItemsBean.catalogoActual.nombre}"></f:param>
+					</h:outputFormat>
+				</f:facet>
+
+				<p:column headerText="#{msg.nombre}">
+					<h:outputText value="#{item.nombre}" />
+				</p:column>
+				<p:column headerText="#{msg.marca}">
+					<h:outputText value="#{item.marcaString}" />
+				</p:column>
+				<p:column headerText="#{msg.precioRebajado}">
+					<h:outputText value="#{item.precioRebajado}€" />
+				</p:column>
+				<p:column headerText="#{msg.precioOriginal}">
+					<h:outputText value="#{item.precioOriginal}€" />
+				</p:column>
+				<p:column headerText="#{msg.url}">
+					<h:outputText value="#{item.urlProducto}" />
+				</p:column>
+				<p:column>
+					<p:commandButton value="#{msg.borrar}" icon="ui-icon-close"
+						actionListener="#{listarItemsBean.borrar}">
+						<f:ajax execute="@all" render="tablaItems" />
+						<f:param id="item" value="#{item}" />
+						<p:confirm header="#{msg.confirmacion}" icon="ui-icon-alert"
+							message="¿Quieres borrar el item #{item.nombre}" />
+					</p:commandButton>
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+						<p:commandButton value="#{msg.si}" type="button"
+							styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						<p:commandButton value="#{msg.no}" type="button"
+							styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>
+
+					<p:commandButton value="#{msg.detalles}"
+						update=":formTablaItems:formDetallesItem:itemDetalles"
+						icon="ui-icon-search" oncomplete="PF('itemDialogo').show();">
+						<f:setPropertyActionListener value="#{item}"
+							target="#{listarItemsBean.itemSeleccionado}" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+
+			<h:form id="formDetallesItem">
+				<p:dialog header="#{msg.detallesDelItem}" widgetVar="itemDialogo"
+					modal="true" showEffect="fade" hideEffect="fade">
+					<p:messages id="msgs" />
+					<p:outputPanel id="itemDetalles" style="text-align:center;">
+						<p:panelGrid columns="3" cellpadding="5">
+							<f:facet name="header">
+								<img src="#{listarItemsBean.itemSeleccionado.urlImagen}">
+								</img>
+							</f:facet>
+
+							<h:outputLabel value="#{msg.codigo}:" />
+							<h:outputText id="codigo" label="Codigo"
+								value="#{listarItemsBean.itemSeleccionado.codigo}" />
+							<p:message for="codigo" style="display:none" />
+
+							<h:outputLabel value="#{msg.nombre}:" />
+							<h:outputText rendered="#{!listarItemsBean.itemEditable}"
+								id="nombre1" label="nombre1"
+								value="#{listarItemsBean.itemSeleccionado.nombre}" />
+							<p:inputText rendered="#{listarItemsBean.itemEditable}"
+								id="nombre2" label="Nombre" required="true"
+								value="#{listarItemsBean.itemSeleccionado.nombre}" />
+							<p:message for="nombre2" />
+
+							<h:outputLabel value="#{msg.nombreCompleto}:" />
+							<h:outputText rendered="#{!listarItemsBean.itemEditable}"
+								id="nombreCompleto1" label="nombreCompleto1"
+								value="#{listarItemsBean.itemSeleccionado.nombreCompleto}" />
+							<p:inputText rendered="#{listarItemsBean.itemEditable}"
+								id="nombreCompleto2" label="Nombre Completo" required="true"
+								value="#{listarItemsBean.itemSeleccionado.nombreCompleto}" />
+							<p:message for="nombreCompleto2" />
+
+							<h:outputLabel value="#{msg.marca}:" />
+							<h:outputText id="marca1" label="marca1"
+								value="#{listarItemsBean.itemSeleccionado.marcaString}" />
+							<p:message for="marca1" />
+
+							<h:outputLabel value="#{msg.urlProducto}:" />
+							<h:outputText rendered="#{!listarItemsBean.itemEditable}"
+								id="urlProd1" label="urlProd1"
+								value="#{listarItemsBean.itemSeleccionado.urlProducto}" />
+							<p:inputText rendered="#{listarItemsBean.itemEditable}"
+								id="urlProd2" label="URL Producto" required="true"
+								value="#{listarItemsBean.itemSeleccionado.urlProducto}" />
+							<p:message for="urlProd2" />
+
+							<h:outputLabel value="#{msg.urlImagen}:" />
+							<h:outputText rendered="#{!listarItemsBean.itemEditable}"
+								id="urlImg1" label="urlImg1"
+								value="#{listarItemsBean.itemSeleccionado.urlImagen}" />
+							<p:inputText rendered="#{listarItemsBean.itemEditable}"
+								id="urlImg2" label="URL Imagen" required="true"
+								value="#{listarItemsBean.itemSeleccionado.urlImagen}" />
+							<p:message for="urlImg2" />
+
+							<h:outputLabel value="#{msg.precioRebajado}:" />
+							<h:outputText rendered="#{!listarItemsBean.itemEditable}"
+								id="precioReb1" label="precioReb1"
+								value="#{listarItemsBean.itemSeleccionado.precioRebajado}€" />
+							<p:inputText rendered="#{listarItemsBean.itemEditable}"
+								id="precioReb2" label="Precio Rebajado" required="true"
+								value="#{listarItemsBean.itemSeleccionado.precioRebajado}">
+								<f:validateDoubleRange minimum="0" />
+							</p:inputText>
+							<p:message for="precioReb2" />
+
+							<h:outputLabel value="#{msg.precioOriginal}:" />
+							<h:outputText rendered="#{!listarItemsBean.itemEditable}"
+								id="precioOrig1" label="precioOrig1"
+								value="#{listarItemsBean.itemSeleccionado.precioOriginal}€" />
+							<p:inputText rendered="#{listarItemsBean.itemEditable}"
+								id="precioOrig2" label="Precio Original" required="true"
+								value="#{listarItemsBean.itemSeleccionado.precioOriginal}">
+								<f:validateDoubleRange minimum="0" />
+							</p:inputText>
+							<p:message for="precioOrig2" />
+
+							<h:outputLabel value="#{msg.catalogo}:" />
+							<h:outputText id="catalogo1" label="catalogo1"
+								value="#{listarItemsBean.itemSeleccionado.catalogo.nombre}" />
+							<p:message for="catalogo1" />
+						</p:panelGrid>
+						<p:commandButton rendered="#{!listarItemsBean.itemEditable}"
+							icon="ui-icon-pencil" style="float:left"
+							actionListener="#{listarItemsBean.editarItem}" value="#{msg.editar}">
+							<f:ajax execute="@form" render="itemDetalles" />
+
+						</p:commandButton>
+						<p:commandButton rendered="#{listarItemsBean.itemEditable}"
+							icon="ui-icon-pencil" style="float:left"
+							actionListener="#{listarItemsBean.guardarItem}" value="#{msg.guardar}">
+							<f:ajax execute="@form" render="itemDetalles" />
+							<f:ajax execute="@form" render=":formTablaItems:tablaItems" />
+
+						</p:commandButton>
+					</p:outputPanel>
+				</p:dialog>
+			</h:form>
+		</h:form>
+
+		<p:commandButton style="clear:both;float:right; margin-top:2%"
+			type="button" value="#{msg.asignarNuevasCategorias}" icon="ui-icon-plus"
+			onclick="PF('asignarCategoriaDialogo').show();">
+		</p:commandButton>
+
+		<h:form id="formTablaCategorias">
+			<p:dataTable id="tablaCategorias" style="margin-top:4%"
+				value="#{listarCategoriasBean.categoriasDelCatalogo}"
+				var="categoria" scrollable="true" scrollHeight="150">
+				<f:facet name="header">
+					<h:outputFormat value="#{msg.categoriasDelCatalogo}">
+						<f:param value="#{listarItemsBean.catalogoActual.nombre}"></f:param>
+					</h:outputFormat>
+		        </f:facet>
+				<p:column headerText="#{msg.codigo}">
+					<h:outputText value="#{categoria.codigo}" />
+				</p:column>
+				<p:column headerText="#{msg.nombre}">
+					<h:outputText value="#{categoria.nombre}" />
+				</p:column>
+				<p:column>
+					<p:commandButton value="#{msg.borrar}" icon="ui-icon-close"
+						actionListener="#{listarCategoriasBean.desasignarCategoria}">
+						<f:ajax execute="@form" render="tablaCategorias" />
+						<f:param id="categoria" value="#{categoria}" />
+						<p:confirm header="#{msg.confirmacion}" icon="ui-icon-alert"
+							message="¿Quieres borrar la categoría #{categoria.nombre}" />
+					</p:commandButton>
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+						<p:commandButton value="#{msg.si}" type="button"
+							styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						<p:commandButton value="#{msg.no}" type="button"
+							styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>
+				</p:column>
+			</p:dataTable>
+			<p:growl id="growl3" sticky="true" showDetail="true" life="3000" />
+			<p:dialog header="#{msg.seleccioneCategorias}"
+				widgetVar="asignarCategoriaDialogo" modal="true">
+				<p:ajax event="close" update="formTablaCategorias" />
+				<h:panelGrid style="float:left" id="catalogos" columns="1"
+					cellpadding="1">
+					<p:selectCheckboxMenu id="menu"
+						converter="#{categoriaConverterBean}"
+						value="#{listarCategoriasBean.categoriasSeleccionadas}"
+						label="#{msg.seleccioneCategorias}" filter="true"
+						filterMatchMode="contains" panelStyle="width:250px">
+						<f:selectItems value="#{listarCategoriasBean.categorias}"
+							var="categoria" itemLabel="#{categoria.nombre}"
+							itemValue="#{categoria.nombre}" />
+					</p:selectCheckboxMenu>
+					<p:commandButton style="clear:both;float:right" update="growl3"
+						value="#{msg.asignar}" oncomplete="PF('asignarCategoriaDialogo').hide();"
+						icon="ui-icon-plus" 
+						actionListener="#{listarCategoriasBean.asignar}">
+					</p:commandButton>
+				</h:panelGrid>
+			</p:dialog>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>
+</html>

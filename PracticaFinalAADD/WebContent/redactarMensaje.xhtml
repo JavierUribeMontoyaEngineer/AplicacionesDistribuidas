@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="#{menuBean.plantilla}">
+
+	<ui:define name="title">
+		<f:view locale="#{idiomaBean.locale}">
+			<f:loadBundle basename="resources.application" var="msg" />
+		</f:view>
+		<h:outputText value="#{msg.tituloHome}" />
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="formRedactar">
+			<p:growl id="growl1" showDetail="true" />
+			<p:messages id="msgs" />
+			<p:panel>
+				<h:panelGrid>
+					<f:view>
+						<h:outputLabel value="Redactar una pregunta"
+							style="font-size:20px;font-weight:bold" for="texto" />
+						<h:form id="ShippingForm">
+							<p:inputTextarea  id="texto" value="#{mensajesBean.texto}">
+								<f:validateLength maximum="400" />
+							</p:inputTextarea>
+							<br />
+							<font color="red"><p:message for="texto" /></font>
+							<br />
+							<p:commandButton style="float:left" id="submit"
+								actionListener="#{mensajesBean.enviarTexto}" update="formRedactar:growl1" value="Enviar" />
+							<br />
+						</h:form>
+					</f:view>
+				</h:panelGrid>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>
